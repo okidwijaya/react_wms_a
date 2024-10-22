@@ -103,17 +103,3 @@ function page() {
 }
 
 export default page;
-
-// {/* <div className='overflow-x-scroll w-full max-w-full grid grid-cols-[60px_100px_150px_100px_150px_200px_200px_50px_150px_150px]'> */}
-// <div className='overflow-x-scroll w-full max-w-full grid grid-cols-[60px_100px_150px_150px_200px_200px_150px_150px]'>
-//   <p>Order</p>
-//   <p>Date</p>
-//   <p>Customer</p>
-//   {/* <p>Channel</p> */}
-//   <p>Total</p>
-//   <p>Payment status</p>
-//   <p>Fulfillment status</p>
-//   {/* <p>Items</p> */}
-//   <p>Delivery status</p>
-//   <p>Delivery method</p>
-// </div>
