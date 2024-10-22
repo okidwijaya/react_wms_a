@@ -1,101 +1,258 @@
-import Image from "next/image";
+"use client";
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { loginAction } from "@/redux/actions/auth";
+import { connect } from "react-redux";
+import { loginAuth, registerAuth } from "@/utils/auth";
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [isSignIn, setIsSignIn] = useState(true);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const resetFromAuth = () => {
+    setFirstName("");
+    setLastName("");
+    setEmail("");
+    setPassword("");
+  }
+
+  const loginHandle = (e) => {
+    e.preventDefault();
+    const body = {
+      email: email,
+      password: password,
+    };
+
+    loginAuth(body)
+      .then((response) => {
+        console.log(response.data);
+        resetFromAuth();
+        router.push("/pages/dashboard");
+        toast.success("Login Success", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        resetFromAuth();
+        toast.error("Wrong Email/Password", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+      });
+  };
+
+  const registrationHandle = (e) => {
+    e.preventDefault();
+    const body = {
+      user_name: `${firstName}, ${lastName}`,
+      email: email,
+      password: password,
+    };
+
+    console.log('Registration', body);
+
+    registerAuth(body)
+      .then((response) => {
+        resetFromAuth();
+        console.log(response.data);
+        setIsSignIn(true);
+        toast.success("Registration Success, Please Login.", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        resetFromAuth();
+        toast.error("Registration Failed, Try again.", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+      });
+  };
+
+  return (
+    <div className="items-center justify-items-center flex min-h-screen p-8 pb-20 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
+      <div className="w-full max-w-[250px] mx-auto">
+      <h2 className="text-4xl font-semibold mb-8 text-black">Welcome</h2>
+      <Link href="/pages/dashboard"
+              className="font-semibold w-full py-2 px-3 max-w-full mt-4 bg-[#121212] text-white mr-0 ml-auto border h-fit border-[#121212] rounded-md"
+            >
+              Go to dashboard
+      </Link>
+      </div>
+      <div className="hidden">
+      {isSignIn && (
+        <div className="w-full max-w-md mx-auto flex items-center justify-center">
+          <form
+            onSubmit={loginHandle}
+            className="w-full flex flex-col items-start text-[#121212] border border-[#121212] rounded-md p-4"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+            <div className="w-full flex justify-between pb-6">
+              <div className="w-full">
+                <h2 className="text-xl font-semibold">Login</h2>
+                <p className="text-sm">Continue to dashboard</p>
+              </div>
+              <button
+                onClick={() => setIsSignIn(false)}
+                type="button"
+                className="font-semibold w-full py-1 px-3 max-w-fit mr-0 ml-auto border h-fit border-[#121212] rounded-md"
+              >
+                Sign Up
+              </button>
+            </div>
+            <label className="mb-1">Email</label>
+            <input
+              className="p-2 w-full border border-[#121212] rounded-md"
+              type="email"
+              required
+              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <label className="mb-1 mt-2">Password</label>
+            <input
+              className="p-2 w-full border border-[#121212] rounded-md"
+              type="text"
+              required
+              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <button
+              type="submit"
+              className="font-semibold w-full py-2 px-3 max-w-full mt-4 bg-[#121212] text-white mr-0 ml-auto border h-fit border-[#121212] rounded-md"
+            >
+              Sign In
+            </button>
+          </form>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      )}
+
+      {!isSignIn && (
+        <div className="w-full max-w-md mx-auto flex items-center justify-center">
+          <form
+            onSubmit={registrationHandle}
+            className="w-full flex flex-col items-start text-[#121212] border border-[#121212] rounded-md p-4"
+          >
+            <div className="w-full flex justify-between pb-6">
+              <div className="w-full">
+                <h2 className="text-xl font-semibold">Register</h2>
+                <p className="text-sm">Create New Account</p>
+              </div>
+              <button
+                onClick={() => setIsSignIn(true)}
+                type="button"
+                className="font-semibold w-full py-1 px-3 max-w-fit mr-0 ml-auto border h-fit border-[#121212] rounded-md"
+              >
+                Sign In
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 w-full gap-2 mb-2">
+              <div className="w-full flex flex-col items-start">
+                <label>First Name</label>
+                <input
+                  className="p-2 w-full border border-[#121212] rounded-md"
+                  type="text"
+                  required
+                  name="firstname"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
+              </div>
+              <div className="w-full flex flex-col items-start">
+                <label>Last Name</label>
+                <input
+                  className="p-2 w-full border border-[#121212] rounded-md"
+                  type="text"
+                  required
+                  name="lastname"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+              </div>
+            </div>
+            <label className="mb-1">Email</label>
+            <input
+              className="p-2 w-full border border-[#121212] rounded-md"
+              type="email"
+              required
+              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <label className="mb-1 mt-2">Password</label>
+            <input
+              className="p-2 w-full border border-[#121212] rounded-md"
+              type="text"
+              required
+              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <button
+                className="font-semibold w-full py-2 px-3 max-w-full mt-4 bg-[#121212] text-white mr-0 ml-auto border h-fit border-[#121212] rounded-md"
+                type="submit"
+              >
+                Sign Up
+            </button>
+          </form>
+        </div>
+      )}
+    </div>
     </div>
   );
 }
