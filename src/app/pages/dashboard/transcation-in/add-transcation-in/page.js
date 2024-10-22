@@ -1,17 +1,10 @@
 "use client";
-import IconComponent from "@/app/components/IconComponent";
 import React, { useState } from "react";
 
 function page() {
   const [customer, setCustomer] = useState("");
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [media, setMedia] = useState([]);
-  const [statusPublish, setStatusPublish] = useState("");
   const [category, setCategory] = useState("");
   const [vendor, setVendor] = useState("");
-  const [collection, setCollection] = useState("");
-  const [tag, setTag] = useState("");
   const [notes, setNotes] = useState('');
 
   return (
